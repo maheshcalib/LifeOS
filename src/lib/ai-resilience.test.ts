@@ -27,7 +27,7 @@ const journey = {
   currentSalary: 1200000,
   targetSalary: 2400000,
   targetRoles: []
-} as JourneyState;
+} as unknown as JourneyState;
 
 describe("AI resilience recommendations", () => {
   it("automatically recommends AI-resilient roles", () => {

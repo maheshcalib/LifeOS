@@ -1,13 +1,14 @@
 import type { AnalysisResult } from "@/types";
 
-const storageKey = (id: string) => `careerlens:analysis:${id}`;
+const storageKey = (id: string) => `lifeos:analysis:${id}`;
+const legacyStorageKey = (id: string) => `careerlens:analysis:${id}`;
 
 export function saveAnalysis(id: string, result: AnalysisResult) {
   sessionStorage.setItem(storageKey(id), JSON.stringify(result));
 }
 
 export function loadAnalysis(id: string): AnalysisResult | null {
-  const value = sessionStorage.getItem(storageKey(id));
+  const value = sessionStorage.getItem(storageKey(id)) ?? sessionStorage.getItem(legacyStorageKey(id));
 
   if (!value) {
     return null;

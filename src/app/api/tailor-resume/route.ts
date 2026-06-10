@@ -9,9 +9,22 @@ const schema = {
   type: "object",
   properties: {
     matchScore: { type: "integer" },
+    jdPriorities: { type: "array", items: { type: "string" } },
     matchedKeywords: { type: "array", items: { type: "string" } },
     missingKeywords: { type: "array", items: { type: "string" } },
     unsupportedRequirements: { type: "array", items: { type: "string" } },
+    keywordRecommendations: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          keyword: { type: "string" },
+          evidence: { type: "string" },
+          suggestedPlacement: { type: "string", enum: ["summary", "skills", "experience"] }
+        },
+        required: ["keyword", "evidence", "suggestedPlacement"]
+      }
+    },
     rewrites: {
       type: "array",
       items: {
@@ -42,9 +55,11 @@ const schema = {
   },
   required: [
     "matchScore",
+    "jdPriorities",
     "matchedKeywords",
     "missingKeywords",
     "unsupportedRequirements",
+    "keywordRecommendations",
     "rewrites",
     "tailoredResume"
   ]
@@ -75,7 +90,19 @@ export async function POST(request: Request) {
   try {
     const response = await gemini.models.generateContent({
       model: process.env.GEMINI_MODEL || "gemini-2.5-flash-lite",
-      contents: `Tailor the resume to the job description. Never invent claims, skills, metrics, or experience. Every rewrite must quote source evidence from the resume. Unsupported requirements must be listed, not added to the resume. Return concise JSON only.
+      contents: `Create a detailed ATS-ready resume tailored to the job description. Never invent claims, skills, metrics, or experience. Every rewrite must quote exact source evidence from the resume. Unsupported requirements must be listed, never added to the resume.
+
+Return:
+- the six most important JD priorities;
+- all supported and unsupported keywords;
+- keyword placement recommendations supported by exact resume evidence;
+- 6 to 10 useful rewrites across summary, skills, and experience;
+- a 3 to 4 sentence professional summary;
+- 8 to 12 supported skills where available;
+- 5 to 8 evidence-backed experience bullets where available;
+- education content preserved from the source resume.
+
+Keep writing specific, concise, and ATS-readable. Return JSON only.
 
 TARGET ROLE:
 ${input.targetRole}

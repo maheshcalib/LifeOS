@@ -1,11 +1,12 @@
-const REPORT_PROGRESS_KEY = "careerlens:report-progress";
+const REPORT_PROGRESS_KEY = "lifeos:report-progress";
+const LEGACY_REPORT_PROGRESS_KEY = "careerlens:report-progress";
 
 export function saveReportProgress(completedActions: string[]) {
   sessionStorage.setItem(REPORT_PROGRESS_KEY, JSON.stringify(completedActions));
 }
 
 export function loadReportProgress(): string[] {
-  const value = sessionStorage.getItem(REPORT_PROGRESS_KEY);
+  const value = sessionStorage.getItem(REPORT_PROGRESS_KEY) ?? sessionStorage.getItem(LEGACY_REPORT_PROGRESS_KEY);
   if (!value) return [];
 
   try {

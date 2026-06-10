@@ -25,7 +25,7 @@ export default function UpgradePage() {
             Unlock deeper planning
           </p>
           <h1 className="text-4xl font-semibold tracking-normal">
-            Upgrade CareerLens
+            Upgrade LifeOS
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-200">
             Go deeper on scenarios, life planning, and follow-up reports.

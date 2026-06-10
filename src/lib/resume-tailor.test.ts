@@ -12,9 +12,12 @@ describe("resume tailoring fallback", () => {
     });
 
     expect(result.source).toBe("demo");
-    expect(result.rewrites.length).toBeGreaterThan(0);
+    expect(result.rewrites.length).toBeGreaterThanOrEqual(3);
     expect(result.rewrites.every((rewrite) => rewrite.sourceEvidence.length > 0)).toBe(true);
     expect(result.unsupportedRequirements).toContain("Kubernetes");
     expect(result.tailoredResume.targetRole).toBe("AI Product Manager");
+    expect(result.tailoredResume.experienceBullets.length).toBeGreaterThanOrEqual(3);
+    expect(result.jdPriorities.length).toBeGreaterThan(0);
+    expect(result.keywordRecommendations.length).toBeGreaterThan(0);
   });
 });

@@ -33,7 +33,7 @@ async function fetchJobPage(initialUrl: string) {
     await assertPublicHost(url);
     const response = await fetch(url, {
       redirect: "manual",
-      headers: { "User-Agent": "CareerLens Job Importer/1.0" },
+      headers: { "User-Agent": "LifeOS Job Importer/1.0" },
       signal: AbortSignal.timeout(8000)
     });
     if ([301, 302, 303, 307, 308].includes(response.status)) {

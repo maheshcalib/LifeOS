@@ -1,6 +1,7 @@
 import type { JourneyState } from "@/types";
 
-const JOURNEY_KEY = "careerlens:guided-journey";
+const JOURNEY_KEY = "lifeos:guided-journey";
+const LEGACY_JOURNEY_KEY = "careerlens:guided-journey";
 
 export function createInitialJourney(): JourneyState {
   return {
@@ -31,7 +32,7 @@ export function saveJourney(journey: JourneyState) {
 }
 
 export function loadJourney(): JourneyState {
-  const value = sessionStorage.getItem(JOURNEY_KEY);
+  const value = sessionStorage.getItem(JOURNEY_KEY) ?? sessionStorage.getItem(LEGACY_JOURNEY_KEY);
 
   if (!value) {
     return createInitialJourney();
@@ -46,4 +47,5 @@ export function loadJourney(): JourneyState {
 
 export function resetJourney() {
   sessionStorage.removeItem(JOURNEY_KEY);
+  sessionStorage.removeItem(LEGACY_JOURNEY_KEY);
 }

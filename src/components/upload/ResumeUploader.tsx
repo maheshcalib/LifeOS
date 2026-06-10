@@ -119,7 +119,7 @@ export function ResumeUploader() {
         {status === "parsing"
           ? "Reading resume content..."
           : status === "analyzing"
-            ? "Generating your CareerLens analysis..."
+            ? "Generating your LifeOS analysis..."
             : file
               ? `${(file.size / 1024).toFixed(1)} KB ready to analyze`
               : "PDF, DOCX, or TXT up to 10MB"}

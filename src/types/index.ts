@@ -167,12 +167,72 @@ export interface TailoredResume {
   education: string[];
 }
 
+export interface KeywordRecommendation {
+  keyword: string;
+  evidence: string;
+  suggestedPlacement: "summary" | "skills" | "experience";
+}
+
 export interface TailoringResult {
   source: "gemini" | "demo";
   matchScore: number;
+  jdPriorities: string[];
   matchedKeywords: string[];
   missingKeywords: string[];
   unsupportedRequirements: string[];
+  keywordRecommendations: KeywordRecommendation[];
   rewrites: ResumeRewrite[];
   tailoredResume: TailoredResume;
+}
+
+export type FinancialRiskPreference = "conservative" | "balanced" | "growth";
+export type FinancialGoalType = "emergency" | "education" | "home" | "retirement" | "custom";
+
+export interface FinancialAssumptions {
+  inflation: number;
+  liquidReturn: number;
+  debtReturn: number;
+  growthReturn: number;
+  currentIncomeGrowth: number;
+}
+
+export interface FinancialGoal {
+  id: string;
+  type: FinancialGoalType;
+  title: string;
+  targetAmount: number;
+  targetYear: number;
+  existingCorpus: number;
+  priority: number;
+}
+
+export interface FinancialPlanInput {
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  debtEmi: number;
+  existingSavings: number;
+  existingInvestments: number;
+  riskPreference: FinancialRiskPreference;
+  emergencyFundMonths: number;
+  selectedPathIncomeGrowth: number;
+  assumptions: FinancialAssumptions;
+  goals: FinancialGoal[];
+}
+
+export interface GoalProjection extends FinancialGoal {
+  years: number;
+  futureTarget: number;
+  requiredMonthly: number;
+  allocatedMonthly: number;
+  fundingRatio: number;
+  status: "on-track" | "gap" | "not-feasible";
+  categoryGuidance: string;
+}
+
+export interface FinancialPlanResult {
+  availableMonthlySavings: number;
+  currentPathFiveYearCorpus: number;
+  selectedPathFiveYearCorpus: number;
+  careerPathAdvantage: number;
+  goals: GoalProjection[];
 }

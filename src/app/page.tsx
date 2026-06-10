@@ -1,14 +1,6 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  BrainCircuit,
-  CalendarClock,
-  CheckCircle2,
-  FileScan,
-  Route,
-  Sparkles
-} from "lucide-react";
-import { ProductHeroVisual } from "@/components/visuals/ProductHeroVisual";
+import { ArrowRight, BrainCircuit, CalendarClock, FileScan, Route } from "lucide-react";
+import { CareerPathLine } from "@/components/visuals/CareerPathLine";
 import { ScrollStory } from "@/components/story/ScrollStory";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,28 +31,25 @@ const proofPoints = ["Resume intelligence", "AI disruption model", "Life-aware s
 export default function LandingPage() {
   return (
     <div className="overflow-hidden bg-[#F7F9FC]">
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden mesh-bg text-white">
-        <div className="absolute inset-0 career-grid opacity-30" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-50 to-transparent" />
-        <div className="container relative grid min-h-[calc(100vh-4rem)] items-center gap-12 py-12 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="relative min-h-[calc(100svh-5rem)] overflow-hidden bg-[#F6F8FA]">
+        <div className="absolute inset-0 ink-grid opacity-50" />
+        <div className="absolute left-1/2 top-[42%] h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#D9E2EC]" />
+        <div className="absolute left-1/2 top-[42%] h-[25rem] w-[25rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#E3EAF0]" />
+        <div className="container relative flex min-h-[calc(100svh-5rem)] flex-col items-center justify-center pb-24 pt-14 text-center">
           <div className="animate-rise">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-[#D9E2EC] backdrop-blur">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              AI career operating system
-            </div>
-            <h1 className="max-w-4xl text-5xl font-semibold leading-[1.02] tracking-normal sm:text-7xl">
-              Your career. Your life. Five years ahead.
+            <p className="text-xs font-bold uppercase text-[#315A75]">Career clarity, built around your life</p>
+            <h1 className="mx-auto mt-5 max-w-6xl text-5xl font-semibold leading-[0.98] text-[#071A2B] sm:text-7xl lg:text-[6.5rem]">
+              Your career. Your life.
+              <span className="block text-[#315A75]">Five years ahead.</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              CareerLens turns a resume into a living career model: AI impact,
-              skill gaps, salary paths, and life decisions rendered as one
-              clear product experience.
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-7 text-[#526D82] sm:text-lg">
+              Turn your resume, ambitions, and life priorities into one clear five-year path with role opportunities, AI-resilient skills, and practical next moves.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Button
                 asChild
                 size="lg"
-                className="h-12 bg-[#3E6B89] px-6 text-base hover:bg-[#315A75]"
+                className="h-12 bg-[#102A43] px-6 text-base hover:bg-[#071A2B]"
               >
                 <Link href="/journey">
                   Upload My Resume — It&apos;s Free
@@ -71,25 +60,20 @@ export default function LandingPage() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-12 border-white/25 bg-white/10 px-6 text-base text-white hover:bg-white/20 hover:text-white"
+                className="h-12 border-[#102A43] bg-transparent px-6 text-base text-[#102A43] hover:bg-white"
               >
-                <Link href="/journey">Explore Product</Link>
+                <Link href="#how-it-works">See how it works</Link>
               </Button>
             </div>
-            <div className="mt-8 grid gap-3 text-sm text-slate-200 sm:grid-cols-3">
-              {proofPoints.map((point) => (
-                <div key={point} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#9FB3C8]" aria-hidden="true" />
-                  {point}
-                </div>
-              ))}
+            <CareerPathLine />
+            <div className="mt-7 flex flex-wrap justify-center gap-x-8 gap-y-2 text-xs font-semibold uppercase text-[#526D82]">
+              {proofPoints.map((point) => <span key={point}>{point}</span>)}
             </div>
           </div>
-          <ProductHeroVisual />
         </div>
       </section>
 
-      <ScrollStory />
+      <div id="how-it-works"><ScrollStory /></div>
 
       <section className="container py-20">
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
@@ -135,14 +119,14 @@ export default function LandingPage() {
       <section className="bg-white py-20">
         <div className="container grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <div className="neon-panel relative overflow-hidden rounded-lg p-6 text-white shadow-2xl">
+            <div className="relative overflow-hidden rounded-lg border border-[#315A75] bg-[#102A43] p-6 text-white shadow-2xl">
               <div className="absolute inset-0 career-grid opacity-20" />
               <div className="relative z-10 grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
-                <div className="rounded-lg border border-white/10 bg-white/10 p-5 backdrop-blur">
+                <div className="rounded-lg border border-[#6489A1] bg-[#071A2B]/55 p-5 backdrop-blur">
                   <FileScan className="mb-5 h-8 w-8 text-[#9FB3C8]" aria-hidden="true" />
-                  <p className="text-sm text-[#D9E2EC]">Resume scan complete</p>
-                  <p className="mt-2 text-5xl font-semibold">94%</p>
-                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                  <p className="text-sm font-semibold text-[#D9E2EC]">Resume scan complete</p>
+                  <p className="mt-2 text-5xl font-semibold text-white">94%</p>
+                  <p className="mt-4 text-sm leading-6 text-[#C4D4DF]">
                     Parsed experience, mapped achievements, and detected role
                     trajectory signals.
                   </p>

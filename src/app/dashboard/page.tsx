@@ -7,6 +7,7 @@ import { UpskillRoadmap } from "@/components/career/UpskillRoadmap";
 import { MetricOrbit } from "@/components/visuals/MetricOrbit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SavedFinancialPlans } from "@/components/life/SavedFinancialPlans";
 
 export default function DashboardPage() {
   return (
@@ -73,7 +74,7 @@ export default function DashboardPage() {
             ]}
           />
         </div>
-        <div className="neon-panel mt-5 rounded-lg p-6 text-white shadow-2xl">
+        <div className="mt-5 rounded-lg border border-[#315A75] bg-[#102A43] p-6 text-white shadow-2xl">
           <div className="flex items-center gap-2 text-[#D9E2EC]">
             <Clock3 className="h-5 w-5" aria-hidden="true" />
             Next 7 days
@@ -81,14 +82,15 @@ export default function DashboardPage() {
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {["Rewrite resume bullets", "Publish AI workflow case", "Shortlist target roles"].map(
               (task) => (
-                <div key={task} className="rounded-lg border border-white/10 bg-white/10 p-4">
+                <div key={task} className="rounded-lg border border-[#6489A1] bg-[#071A2B]/45 p-4">
                   <p className="font-medium">{task}</p>
-                  <p className="mt-2 text-sm text-slate-300">Recommended next action</p>
+                  <p className="mt-2 text-sm text-[#C4D4DF]">Recommended next action</p>
                 </div>
               )
             )}
           </div>
         </div>
+        <SavedFinancialPlans />
       </section>
     </div>
   );

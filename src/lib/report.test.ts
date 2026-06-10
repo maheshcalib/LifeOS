@@ -26,6 +26,7 @@ const journey: JourneyState = {
   currentStep: 5,
   analysisId: "1",
   analysis,
+  resumeText: "Business Analyst with analytics and stakeholder leadership experience.",
   careerStage: "mid-career",
   currentRole: "Business Analyst",
   industry: "Technology",

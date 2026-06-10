@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "CareerLens",
+  title: "LifeOS",
   description: "AI-powered career and life planning for the next five years."
 };
 

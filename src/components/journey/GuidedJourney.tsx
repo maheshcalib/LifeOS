@@ -268,7 +268,7 @@ export function GuidedJourney() {
           {journey.currentStep === 4 ? (
             <section>
               <p className="text-sm font-semibold uppercase text-[#0F766E]">Step 4 · Preferences</p>
-              <h1 className="mt-2 text-3xl font-semibold text-[#132238]">Choose how CareerLens should shape the recommendation.</h1>
+              <h1 className="mt-2 text-3xl font-semibold text-[#132238]">Choose how LifeOS should shape the recommendation.</h1>
               <h2 className="mt-8 font-semibold text-[#132238]">Preferred scenario</h2>
               <div className="mt-3 grid gap-4 md:grid-cols-4">{scenarios.map((option) => <OptionCard key={option.value} {...option} selected={journey.scenarioPreference === option.value} onClick={() => updateJourney({ scenarioPreference: option.value })} />)}</div>
               <h2 className="mt-8 font-semibold text-[#132238]">Risk tolerance</h2>

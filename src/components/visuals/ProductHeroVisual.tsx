@@ -12,7 +12,7 @@ export function ProductHeroVisual() {
       <div className="relative m-5 overflow-hidden rounded-lg border border-[#D9E2EC] bg-white">
         <div className="flex items-center justify-between border-b border-[#D9E2EC] px-5 py-3">
           <div className="flex items-center gap-2 text-sm font-semibold text-[#102A43]">
-            <BriefcaseBusiness className="h-4 w-4" /> CareerLens
+            <BriefcaseBusiness className="h-4 w-4" /> LifeOS
           </div>
           <span className="rounded-full bg-[#EAF0F5] px-3 py-1 text-[11px] text-[#486581]">Career model ready</span>
         </div>

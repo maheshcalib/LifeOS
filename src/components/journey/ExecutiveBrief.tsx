@@ -91,9 +91,10 @@ export function ExecutiveBrief({
           <h2 className="mt-2 text-xl font-semibold text-[#102A43]">Tailor your resume for {activePath.role}</h2>
           <p className="mt-1 text-sm text-[#526D82]">Compare a live job description and approve only evidence-backed rewrites.</p>
         </div>
-        <Button asChild className="bg-[#102A43] hover:bg-[#071A2B]">
-          <Link href={`/tailor?role=${encodeURIComponent(activePath.role)}`}>Tailor resume</Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link href={`/life-planning?growth=${activePath.kind === "ambitious" ? 16 : activePath.kind === "ai-resilient" ? 13 : 10}`}>Plan my corpus</Link></Button>
+          <Button asChild className="bg-[#102A43] hover:bg-[#071A2B]"><Link href={`/tailor?role=${encodeURIComponent(activePath.role)}`}>Tailor resume</Link></Button>
+        </div>
       </section>
 
       <section className="mt-7 rounded-lg border border-[#DCE3EA] bg-white px-6">
