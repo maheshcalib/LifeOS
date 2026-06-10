@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 216 38% 98%;
+    --foreground: 216 48% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 216 48% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 48% 15%;
+    --primary: 194 69% 27%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 173 77% 26%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 27% 95%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 27% 95%;
+    --accent-foreground: 216 48% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 22% 89%;
+    --input: 210 22% 89%;
+    --ring: 194 69% 27%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+}
+
+@layer utilities {
+  .mesh-bg {
+    background:
+      radial-gradient(circle at 82% 12%, rgba(15, 118, 110, 0.12), transparent 30%),
+      linear-gradient(135deg, #132238 0%, #155e75 100%);
+  }
+
+  .career-grid {
+    background-image:
+      linear-gradient(rgba(21, 94, 117, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(21, 94, 117, 0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  .glass-panel {
+    border: 1px solid rgba(220, 227, 234, 0.9);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 18px 55px rgba(19, 34, 56, 0.1);
+    backdrop-filter: blur(18px);
+  }
+
+  .premium-card {
+    color: #132238;
+    border: 1px solid #dce3ea;
+    background: #ffffff;
+    box-shadow: 0 12px 35px rgba(19, 34, 56, 0.07);
+  }
+
+  .neon-panel {
+    border: 1px solid #dce3ea;
+    background: #ffffff;
+    box-shadow: 0 12px 35px rgba(19, 34, 56, 0.07);
+  }
+
+  .neon-text {
+    color: #155e75;
+  }
+
+  .data-line {
+    background: #315A75;
+  }
+
+  .ink-panel {
+    border: 1px solid #d9e2ec;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(7, 26, 43, 0.1);
+  }
+
+  .ink-surface {
+    background: #102a43;
+    color: #ffffff;
+  }
+
+  .ink-grid {
+    background-image:
+      linear-gradient(rgba(62, 107, 137, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(62, 107, 137, 0.08) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 7s ease-in-out infinite;
+  }
+
+  .animate-float-medium {
+    animation: float-medium 5.5s ease-in-out infinite;
+  }
+
+  .animate-scan {
+    animation: scan 3.8s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2.8s linear infinite;
+    background-size: 220% 100%;
+  }
+
+  .animate-progress-fill {
+    transform-origin: left;
+    animation: progress-fill 1.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-rise {
+    animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+@keyframes float-medium {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1deg);
+  }
+  50% {
+    transform: translate3d(10px, -12px, 0) rotate(1deg);
+  }
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-105%);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  .report-canvas {
+    width: 100%;
+  }
+
+  .report-canvas details {
+    break-inside: avoid;
+  }
+
+  .ats-resume {
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
