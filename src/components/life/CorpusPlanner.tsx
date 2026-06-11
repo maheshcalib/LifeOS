@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Banknote, Home, Landmark, LoaderCircle, Plus, Save, ShieldCheck, Sparkles, Trash2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatINR } from "@/lib/currency";
 import { calculateFinancialPlan } from "@/lib/financial-plan";
+import { normalizeFinancialExplanation, type FinancialExplanation } from "@/lib/financial-explanation";
+import { buildJourneyFinancialInput, financialGoalToLifeEvent } from "@/lib/journey-financial";
+import { loadJourney, saveJourney } from "@/lib/journey-store";
 import type { FinancialGoal, FinancialPlanInput, FinancialRiskPreference } from "@/types";
 
 const currentYear = new Date().getFullYear();
@@ -16,7 +20,8 @@ const demoGoals: FinancialGoal[] = [
   { id: "education", type: "education", title: "Graduate program", targetAmount: 1200000, targetYear: currentYear + 3, existingCorpus: 150000, priority: 3 }
 ];
 
-export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number }) {
+export function CorpusPlanner({ selectedGrowth = 12, guided = false }: { selectedGrowth?: number; guided?: boolean }) {
+  const router = useRouter();
   const [input, setInput] = useState<FinancialPlanInput>({
     monthlyIncome: 120000,
     monthlyExpenses: 65000,
@@ -30,13 +35,19 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
     goals: demoGoals
   });
   const [busy, setBusy] = useState<"explain" | "save" | null>(null);
-  const [explanation, setExplanation] = useState<{ summary?: string; nextActions?: string[] } | null>(null);
+  const [explanation, setExplanation] = useState<FinancialExplanation | null>(null);
   const [message, setMessage] = useState("");
   const [planId, setPlanId] = useState<string | null>(null);
   const [planName, setPlanName] = useState(`Life plan · ${new Date().toLocaleDateString("en-IN")}`);
   const result = useMemo(() => calculateFinancialPlan(input, currentYear), [input]);
 
   useEffect(() => {
+    if (guided) {
+      const journey = loadJourney();
+      setInput(buildJourneyFinancialInput(journey));
+      setPlanName("My LifeOS journey plan");
+      return;
+    }
     const openPlan = sessionStorage.getItem("lifeos:open-financial-plan");
     const pendingPlan = sessionStorage.getItem("lifeos:pending-financial-plan");
     const stored = openPlan || pendingPlan;
@@ -55,7 +66,7 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
       if (restoredInput) setInput(restoredInput);
       setPlanId(plan.id || null);
       if (plan.name) setPlanName(plan.name);
-      setExplanation(plan.ai_explanation || plan.explanation || null);
+      setExplanation(normalizeFinancialExplanation(plan.ai_explanation || plan.explanation));
       setMessage(openPlan ? "Saved plan opened. Changes will update this plan." : "Draft restored after sign-in. Save it to add it to your account.");
     } catch {
       setMessage("The saved draft could not be restored.");
@@ -63,7 +74,7 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
       sessionStorage.removeItem("lifeos:open-financial-plan");
       sessionStorage.removeItem("lifeos:pending-financial-plan");
     }
-  }, []);
+  }, [guided]);
 
   function update<K extends keyof FinancialPlanInput>(key: K, value: FinancialPlanInput[K]) {
     setInput((current) => ({ ...current, [key]: value }));
@@ -79,7 +90,7 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
     try {
       const response = await fetch("/api/financial-explanation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ result }) });
       const data = await response.json();
-      setExplanation(data.explanation || null);
+      setExplanation(normalizeFinancialExplanation(data.explanation));
     } finally {
       setBusy(null);
     }
@@ -108,6 +119,18 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
     } finally {
       setBusy(null);
     }
+  }
+
+  function persistGuidedJourney(nextStep: 3 | 6) {
+    const journey = loadJourney();
+    saveJourney({
+      ...journey,
+      currentStep: nextStep,
+      lifeEvents: input.goals.map(financialGoalToLifeEvent),
+      financialPlanInput: input,
+      financialPlanResult: result
+    });
+    router.push("/journey");
   }
 
   return (
@@ -154,23 +177,28 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
       </section>
 
       <section className="rounded-lg border border-[#D9E2EC] bg-white p-5">
-        <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase text-[#315A75]">Goal feasibility map</p><h2 className="mt-1 text-xl font-semibold text-[#102A43]">Fund goals in priority order</h2></div><Button variant="outline" onClick={addGoal}><Plus />Add goal</Button></div>
-        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+        <div className="flex items-center justify-between gap-4"><div><p className="text-xs font-bold uppercase text-[#315A75]">{guided ? "Investment timeline" : "Goal feasibility map"}</p><h2 className="mt-1 text-xl font-semibold text-[#102A43]">Fund goals in priority order</h2></div><Button variant="outline" onClick={addGoal}><Plus />Add goal</Button></div>
+        <div className={`mt-5 ${guided ? "space-y-3" : "grid gap-4 lg:grid-cols-3"}`}>
           {result.goals.map((goal) => (
-            <article key={goal.id} className="rounded-lg border border-[#D9E2EC] bg-[#F7F9FC] p-4">
+            <article key={goal.id} className={`rounded-lg border border-[#D9E2EC] bg-[#F7F9FC] p-4 ${guided ? "grid gap-4 md:grid-cols-[0.75fr_1.25fr_0.8fr] md:items-center" : ""}`}>
               <div className="flex items-start justify-between gap-3">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-md ${goal.status === "on-track" ? "bg-green-100 text-[#116438]" : goal.status === "gap" ? "bg-amber-100 text-[#8A5A00]" : "bg-red-100 text-[#9F1C14]"}`}>{goal.type === "emergency" ? <ShieldCheck /> : goal.type === "home" ? <Home /> : <Landmark />}</span>
+                <div className="flex items-center gap-3">
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-md ${goal.status === "on-track" ? "bg-green-100 text-[#116438]" : goal.status === "gap" ? "bg-amber-100 text-[#8A5A00]" : "bg-red-100 text-[#9F1C14]"}`}>{goal.type === "emergency" ? <ShieldCheck /> : goal.type === "home" ? <Home /> : <Landmark />}</span>
+                  {guided ? <div><p className="text-xs font-semibold uppercase text-[#526D82]">{goal.targetYear}</p><input className="mt-1 w-full bg-transparent font-semibold text-[#102A43] outline-none" value={goal.title} onChange={(event) => updateGoal(goal.id, { title: event.target.value })} /></div> : null}
+                </div>
                 <Button size="icon" variant="ghost" title="Delete goal" onClick={() => update("goals", input.goals.filter((item) => item.id !== goal.id))}><Trash2 /></Button>
               </div>
-              <input className="mt-4 w-full bg-transparent font-semibold text-[#102A43] outline-none" value={goal.title} onChange={(event) => updateGoal(goal.id, { title: event.target.value })} />
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#D9E2EC]"><div className={`h-full rounded-full ${goal.status === "on-track" ? "bg-[#157347]" : goal.status === "gap" ? "bg-[#B7791F]" : "bg-[#B42318]"}`} style={{ width: `${Math.min(100, goal.fundingRatio * 100)}%` }} /></div>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-[#526D82]">
+              <div>
+                {!guided ? <input className="mt-4 w-full bg-transparent font-semibold text-[#102A43] outline-none" value={goal.title} onChange={(event) => updateGoal(goal.id, { title: event.target.value })} /> : null}
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#D9E2EC]"><div className={`h-full rounded-full ${goal.status === "on-track" ? "bg-[#157347]" : goal.status === "gap" ? "bg-[#B7791F]" : "bg-[#B42318]"}`} style={{ width: `${Math.min(100, goal.fundingRatio * 100)}%` }} /></div>
+                <p className="mt-3 rounded-md bg-white p-3 text-xs font-medium text-[#526D82]">{goal.categoryGuidance}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-xs text-[#526D82]">
                 <div><p>Future target</p><p className="mt-1 font-semibold text-[#102A43]">{formatINR(goal.futureTarget)}</p></div>
                 <div><p>Required monthly</p><p className="mt-1 font-semibold text-[#102A43]">{formatINR(goal.requiredMonthly)}</p></div>
                 <div><p>Allocated monthly</p><p className="mt-1 font-semibold text-[#102A43]">{formatINR(goal.allocatedMonthly)}</p></div>
                 <div><p>Target year</p><input type="number" className="mt-1 w-full bg-transparent font-semibold text-[#102A43] outline-none" value={goal.targetYear} onChange={(event) => updateGoal(goal.id, { targetYear: Number(event.target.value) })} /></div>
               </div>
-              <p className="mt-4 rounded-md bg-white p-3 text-xs font-medium text-[#526D82]">{goal.categoryGuidance}</p>
             </article>
           ))}
         </div>
@@ -194,6 +222,7 @@ export function CorpusPlanner({ selectedGrowth = 12 }: { selectedGrowth?: number
           {message ? <p className="mt-3 text-sm text-[#526D82]">{message}</p> : null}
         </div>
       </section>
+      {guided ? <div className="sticky bottom-4 flex items-center justify-between rounded-lg border border-[#D9E2EC] bg-white/95 p-4 shadow-xl backdrop-blur"><Button variant="outline" onClick={() => persistGuidedJourney(3)}>Edit life events</Button><Button className="bg-[#102A43] hover:bg-[#071A2B]" onClick={() => persistGuidedJourney(6)}>Continue to report</Button></div> : null}
     </div>
   );
 }

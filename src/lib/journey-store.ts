@@ -22,8 +22,14 @@ export function createInitialJourney(): JourneyState {
     weeklyLearningHours: 5,
     currentSalary: 1200000,
     targetSalary: 2000000,
+    monthlyExpenses: 65000,
+    debtEmi: 5000,
+    existingSavings: 250000,
+    existingInvestments: 300000,
     lifeEvents: [],
-    scenarioPreference: null
+    scenarioPreference: null,
+    financialPlanInput: null,
+    financialPlanResult: null
   };
 }
 

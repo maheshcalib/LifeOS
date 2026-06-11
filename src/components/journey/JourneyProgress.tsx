@@ -1,10 +1,10 @@
 import { Check } from "lucide-react";
 
-const steps = ["Resume", "Career", "Life", "Scenario", "Report"];
+const steps = ["Resume", "Career", "Life", "Scenario", "Investment", "Report"];
 
 export function JourneyProgress({ currentStep }: { currentStep: number }) {
   return (
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-6 gap-2">
       {steps.map((step, index) => {
         const number = index + 1;
         const active = number === currentStep;

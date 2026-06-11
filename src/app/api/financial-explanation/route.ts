@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getGeminiClient } from "@/lib/gemini";
+import { normalizeFinancialExplanation } from "@/lib/financial-explanation";
 import type { FinancialPlanResult } from "@/types";
 
 function fallback(result: FinancialPlanResult) {
@@ -24,7 +25,8 @@ export async function POST(request: Request) {
       contents: `Explain this deterministic financial plan in concise educational language. Do not change numbers, recommend named products, or imply guaranteed returns. Return JSON with summary, tradeoffs, nextActions, warning.\n${JSON.stringify(body.result)}`,
       config: { responseMimeType: "application/json" }
     });
-    return NextResponse.json({ explanation: JSON.parse(response.text || "{}"), source: "gemini" });
+    const generated = normalizeFinancialExplanation(JSON.parse(response.text || "{}"), deterministic.summary);
+    return NextResponse.json({ explanation: generated, source: "gemini" });
   } catch {
     return NextResponse.json({ explanation: deterministic, source: "deterministic" });
   }

@@ -40,8 +40,14 @@ const journey: JourneyState = {
   weeklyLearningHours: 6,
   currentSalary: 1200000,
   targetSalary: 2200000,
+  monthlyExpenses: 65000,
+  debtEmi: 5000,
+  existingSavings: 250000,
+  existingInvestments: 300000,
   lifeEvents: [],
-  scenarioPreference: "leadership"
+  scenarioPreference: "leadership",
+  financialPlanInput: null,
+  financialPlanResult: null
 };
 
 describe("report derivation", () => {

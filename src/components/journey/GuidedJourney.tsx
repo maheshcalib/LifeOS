@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Banknote,
@@ -89,6 +90,7 @@ const scenarios: { value: ScenarioPreference; title: string; description: string
 ];
 
 export function GuidedJourney() {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [journey, setJourney] = useState<JourneyState>(createInitialJourney);
   const [file, setFile] = useState<File | null>(null);
@@ -98,9 +100,11 @@ export function GuidedJourney() {
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    setJourney(loadJourney());
+    const storedJourney = loadJourney();
+    setJourney(storedJourney);
     setLoaded(true);
-  }, []);
+    if (storedJourney.currentStep === 5) router.push("/life-planning?guided=1");
+  }, [router]);
 
   useEffect(() => {
     if (loaded) saveJourney(journey);
@@ -122,11 +126,26 @@ export function GuidedJourney() {
   }
 
   function toggleEvent(option: (typeof lifeEvents)[number]) {
-    const selected = journey.lifeEvents.some((event) => event.title === option.title);
+    const selected = journey.lifeEvents.some((event) => event.id === option.title);
     const next: JourneyLifeEvent[] = selected
-      ? journey.lifeEvents.filter((event) => event.title !== option.title)
+      ? journey.lifeEvents.filter((event) => event.id !== option.title)
       : [...journey.lifeEvents, { id: option.title, title: option.title, year: option.year, cost: option.cost }];
     updateJourney({ lifeEvents: next });
+  }
+
+  function updateEvent(id: string, patch: Partial<JourneyLifeEvent>) {
+    updateJourney({ lifeEvents: journey.lifeEvents.map((event) => event.id === id ? { ...event, ...patch } : event) });
+  }
+
+  function addCustomEvent() {
+    updateJourney({
+      lifeEvents: [...journey.lifeEvents, {
+        id: crypto.randomUUID(),
+        title: "New life event",
+        year: new Date().getFullYear() + 3,
+        cost: 500000
+      }]
+    });
   }
 
   async function analyzeResume() {
@@ -166,7 +185,11 @@ export function GuidedJourney() {
     journey.currentStep === 2
       ? Boolean(journey.careerGoal && journey.careerPriority && journey.workStyle && journey.targetRoles.length)
       : journey.currentStep === 3
-        ? journey.targetSalary > journey.currentSalary
+        ? journey.targetSalary > journey.currentSalary &&
+          journey.monthlyExpenses > 0 &&
+          journey.existingSavings >= 0 &&
+          journey.existingInvestments >= 0 &&
+          journey.lifeEvents.length > 0
         : journey.currentStep === 4
           ? Boolean(journey.scenarioPreference)
           : true;
@@ -261,7 +284,27 @@ export function GuidedJourney() {
                 <div className="premium-card rounded-lg p-5"><p className="text-sm text-[#64748B]">Transition timeframe</p><p className="mt-2 text-2xl font-semibold text-[#132238]">{journey.transitionMonths} months</p><input className="mt-5 w-full accent-[#155E75]" type="range" min="3" max="36" step="3" value={journey.transitionMonths} onChange={(event) => updateJourney({ transitionMonths: Number(event.target.value) })} /></div>
               </div>
               <h2 className="mt-8 font-semibold text-[#132238]">Major life events</h2>
-              <div className="mt-3 grid gap-4 md:grid-cols-3">{lifeEvents.map((option) => <OptionCard key={option.title} title={option.title} description={`${option.year} · ${formatINR(option.cost)}`} icon={option.icon} selected={journey.lifeEvents.some((event) => event.title === option.title)} onClick={() => toggleEvent(option)} />)}</div>
+              <div className="mt-3 grid gap-4 md:grid-cols-3">{lifeEvents.map((option) => <OptionCard key={option.title} title={option.title} description={`${option.year} · ${formatINR(option.cost)}`} icon={option.icon} selected={journey.lifeEvents.some((event) => event.id === option.title)} onClick={() => toggleEvent(option)} />)}</div>
+              <div className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+                <LifeTimeline events={journey.lifeEvents} onChange={updateEvent} onAdd={addCustomEvent} onDelete={(id) => updateJourney({ lifeEvents: journey.lifeEvents.filter((event) => event.id !== id) })} />
+                <div className="premium-card rounded-lg p-5 lg:p-6">
+                  <p className="text-xs font-semibold uppercase text-[#3E6B89]">Essential money inputs</p>
+                  <h2 className="mt-1 font-semibold text-[#132238]">What can your plan use today?</h2>
+                  <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                    {[
+                      ["Monthly expenses", "monthlyExpenses"],
+                      ["Debt EMI", "debtEmi"],
+                      ["Existing savings", "existingSavings"],
+                      ["Existing investments", "existingInvestments"]
+                    ].map(([label, key]) => (
+                      <label key={key} className={inputLabel}>{label}
+                        <input type="number" className={fieldClass} value={journey[key as keyof JourneyState] as number} onChange={(event) => updateJourney({ [key]: Number(event.target.value) })} />
+                      </label>
+                    ))}
+                  </div>
+                  <p className="mt-5 rounded-md bg-[#F4F7FA] p-3 text-xs leading-5 text-[#64748B]">These inputs let LifeOS show whether each event is feasible, not just how much it costs.</p>
+                </div>
+              </div>
             </section>
           ) : null}
 
@@ -276,7 +319,7 @@ export function GuidedJourney() {
             </section>
           ) : null}
 
-          {journey.currentStep === 5 && analysis ? (
+          {journey.currentStep === 6 && analysis ? (
             <ExecutiveBrief
               journey={journey}
               analysis={analysis}
@@ -293,7 +336,16 @@ export function GuidedJourney() {
           {journey.currentStep > 1 && journey.currentStep < 5 ? (
             <div className="premium-card sticky bottom-4 mt-10 flex items-center justify-between rounded-lg p-4">
               <Button variant="outline" onClick={() => updateJourney({ currentStep: journey.currentStep - 1 })}>Back</Button>
-              <Button disabled={!canContinue} className="bg-[#155E75] hover:bg-[#164E63]" onClick={() => updateJourney({ currentStep: journey.currentStep + 1 })}>{journey.currentStep === 4 ? "Build my report" : "Continue"}</Button>
+              <Button disabled={!canContinue} className="bg-[#155E75] hover:bg-[#164E63]" onClick={() => {
+                if (journey.currentStep === 4) {
+                  const nextJourney = { ...journey, currentStep: 5 };
+                  setJourney(nextJourney);
+                  saveJourney(nextJourney);
+                  router.push("/life-planning?guided=1");
+                  return;
+                }
+                updateJourney({ currentStep: journey.currentStep + 1 });
+              }}>{journey.currentStep === 4 ? "Build investment plan" : "Continue"}</Button>
             </div>
           ) : null}
         </div>

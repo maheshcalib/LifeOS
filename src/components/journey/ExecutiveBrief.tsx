@@ -50,6 +50,13 @@ export function ExecutiveBrief({
   const [selected, setSelected] = useState<CareerPathKind>("best-fit");
   const activePath = paths.find((path) => path.kind === selected) || paths[0];
   const topGap = analysis.skills.gaps[0] || "Interview positioning";
+  const financialResult = journey.financialPlanResult;
+  const totalMonthlyInvestment = financialResult?.goals.reduce((total, goal) => total + goal.requiredMonthly, 0) ?? 0;
+  const onTrackGoals = financialResult?.goals.filter((goal) => goal.status === "on-track").length ?? 0;
+  const largestFundingGap = financialResult?.goals.reduce((largest, goal) => {
+    const gap = Math.max(0, goal.requiredMonthly - goal.allocatedMonthly);
+    return gap > largest ? gap : largest;
+  }, 0) ?? 0;
 
   return (
     <div className="report-canvas">
@@ -85,6 +92,20 @@ export function ExecutiveBrief({
         <CareerPathMap paths={paths} selected={selected} onSelect={setSelected} />
       </section>
 
+      {financialResult ? (
+        <section className="mt-5 rounded-lg border border-[#B8C9D6] bg-white p-5">
+          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div><p className="text-xs font-semibold uppercase text-[#3E6B89]">Life-event readiness</p><h2 className="mt-2 text-xl font-semibold text-[#102A43]">Your career and investment plan now work as one decision.</h2></div>
+            <Button asChild variant="outline"><Link href="/life-planning?guided=1">Review investment plan</Link></Button>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            <div className="rounded-md bg-[#F4F7FA] p-4"><p className="text-xs text-[#64748B]">Total required monthly</p><p className="mt-2 text-xl font-semibold text-[#102A43]">{formatINR(totalMonthlyInvestment)}</p></div>
+            <div className="rounded-md bg-[#F4F7FA] p-4"><p className="text-xs text-[#64748B]">Goals on track</p><p className="mt-2 text-xl font-semibold text-[#102A43]">{onTrackGoals} of {financialResult.goals.length}</p></div>
+            <div className="rounded-md bg-[#F4F7FA] p-4"><p className="text-xs text-[#64748B]">Largest monthly gap</p><p className="mt-2 text-xl font-semibold text-[#102A43]">{formatINR(largestFundingGap)}</p></div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="mt-5 flex flex-col justify-between gap-5 rounded-lg border border-[#B8C9D6] bg-[#E8EFF4] p-5 md:flex-row md:items-center">
         <div>
           <p className="text-xs font-semibold uppercase text-[#3E6B89]">Turn direction into an application</p>
@@ -92,7 +113,6 @@ export function ExecutiveBrief({
           <p className="mt-1 text-sm text-[#526D82]">Compare a live job description and approve only evidence-backed rewrites.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline"><Link href={`/life-planning?growth=${activePath.kind === "ambitious" ? 16 : activePath.kind === "ai-resilient" ? 13 : 10}`}>Plan my corpus</Link></Button>
           <Button asChild className="bg-[#102A43] hover:bg-[#071A2B]"><Link href={`/tailor?role=${encodeURIComponent(activePath.role)}`}>Tailor resume</Link></Button>
         </div>
       </section>

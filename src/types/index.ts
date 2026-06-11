@@ -72,8 +72,14 @@ export interface JourneyState {
   weeklyLearningHours: number;
   currentSalary: number;
   targetSalary: number;
+  monthlyExpenses: number;
+  debtEmi: number;
+  existingSavings: number;
+  existingInvestments: number;
   lifeEvents: JourneyLifeEvent[];
   scenarioPreference: ScenarioPreference | null;
+  financialPlanInput: FinancialPlanInput | null;
+  financialPlanResult: FinancialPlanResult | null;
 }
 
 export interface JobMatch {
